@@ -42,6 +42,8 @@ public class PluginConfiguration extends GlobalConfiguration {
 
     private ListSecrets listSecrets;
 
+    private String prefix;
+
     public PluginConfiguration() {
         load();
     }
@@ -116,6 +118,17 @@ public class PluginConfiguration extends GlobalConfiguration {
         save();
     }
 
+    public String getPrefix() {
+        return prefix;
+    }
+
+    @DataBoundSetter
+    @SuppressWarnings("unused")
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+        save();
+    }
+
     @Override
     public synchronized boolean configure(StaplerRequest req, JSONObject json) {
         // This method is unnecessary, except to apply the following workaround.
@@ -124,6 +137,7 @@ public class PluginConfiguration extends GlobalConfiguration {
         this.beta = null;
         this.endpointConfiguration = null;
         this.listSecrets = null;
+        this.prefix = null;
 
         req.bindJSON(this, json);
         save();

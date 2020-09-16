@@ -330,6 +330,7 @@ unclassified:
           values:
             - foo
             - bar
+    prefix: foo/bar # optional
 ```
 
 ## Bugs

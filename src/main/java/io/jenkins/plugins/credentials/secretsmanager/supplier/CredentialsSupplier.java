@@ -55,6 +55,10 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
                 .flatMap(beta -> Optional.ofNullable(beta.getClients()))
                 .map(Clients::build);
 
+        final Function<String, String> nameFormatter = Optional.ofNullable(config.getPrefix())
+                .map(p -> (Function<String, String>) name -> name.replaceFirst(p, ""))
+                .orElse(Function.identity());
+
         final Stream<StandardCredentials> creds;
         if (clients.isPresent()) {
             // Custom behavior
@@ -75,7 +79,8 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
             // Default behavior
             final Client clientConfig = new Client(new DefaultAWSCredentialsProviderChain(), config.getEndpointConfiguration(), null);
             final AWSSecretsManager secretsManager = clientConfig.build();
-            final SingleAccountCredentialsSupplier supplier = new SingleAccountCredentialsSupplier(secretsManager, SecretListEntry::getName, filters);
+            final Function<SecretListEntry, String> reformattedSecretName = secretListEntry -> nameFormatter.apply(secretListEntry.getName());
+            final SingleAccountCredentialsSupplier supplier = new SingleAccountCredentialsSupplier(secretsManager, reformattedSecretName, filters);
             creds = supplier.get().stream();
         }
 
@@ -102,10 +107,11 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
 
             return secretList.stream()
                     .flatMap(secretListEntry -> {
+                        final String arn = secretListEntry.getARN();
                         final String name = nameSelector.apply(secretListEntry);
                         final String description = Optional.ofNullable(secretListEntry.getDescription()).orElse("");
                         final Map<String, String> tags = Lists.toMap(secretListEntry.getTags(), Tag::getKey, Tag::getValue);
-                        final Optional<StandardCredentials> cred = CredentialsFactory.create(name, description, tags, client);
+                        final Optional<StandardCredentials> cred = CredentialsFactory.create(arn, name, description, tags, client);
                         return Optionals.stream(cred);
                     })
                     .collect(Collectors.toList());
