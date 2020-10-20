@@ -41,7 +41,7 @@ public class BetaConfigurator extends BaseConfigurator<Beta>
 
         if (config == null || config.getBeta() == null) {
             // avoid NPE
-            return new Beta(null);
+            return new Beta(null, null);
         }
 
         return config.getBeta();

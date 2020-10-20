@@ -1,20 +1,15 @@
 package io.jenkins.plugins.credentials.secretsmanager.supplier;
 
 import com.amazonaws.SdkBaseException;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
-import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.Filter;
 import com.amazonaws.services.secretsmanager.model.SecretListEntry;
 import com.amazonaws.services.secretsmanager.model.Tag;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import io.jenkins.plugins.credentials.secretsmanager.FiltersFactory;
-import io.jenkins.plugins.credentials.secretsmanager.config.*;
 import io.jenkins.plugins.credentials.secretsmanager.config.Client;
 import io.jenkins.plugins.credentials.secretsmanager.config.Clients;
-import io.jenkins.plugins.credentials.secretsmanager.config.Filters;
+import io.jenkins.plugins.credentials.secretsmanager.config.ListSecrets;
 import io.jenkins.plugins.credentials.secretsmanager.config.PluginConfiguration;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.DefaultAWSCredentialsProviderChain;
 import io.jenkins.plugins.credentials.secretsmanager.factory.CredentialsFactory;
@@ -55,9 +50,9 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
                 .flatMap(beta -> Optional.ofNullable(beta.getClients()))
                 .map(Clients::build);
 
-        final Function<String, String> nameFormatter = Optional.ofNullable(config.getPrefix())
-                .map(p -> (Function<String, String>) name -> name.replaceFirst(p, ""))
-                .orElse(Function.identity());
+        final Function<String, String> nameFormatter = // FIXME implement Optional.ofNullable(config.getPrefix())
+               // .map(p -> (Function<String, String>) name -> name.replaceFirst(p, ""))
+                /*.orElse(*/Function.identity();//);
 
         final Stream<StandardCredentials> creds;
         if (clients.isPresent()) {

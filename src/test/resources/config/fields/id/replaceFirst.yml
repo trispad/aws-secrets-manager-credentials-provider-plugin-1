@@ -1,0 +1,7 @@
+unclassified:
+  awsCredentialsProvider:
+    fields:
+      id:
+        replaceFirst:
+          regex: "foo-"
+          replacement: ""

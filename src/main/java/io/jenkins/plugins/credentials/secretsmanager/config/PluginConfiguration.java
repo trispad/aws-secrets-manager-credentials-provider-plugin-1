@@ -37,12 +37,12 @@ public class PluginConfiguration extends GlobalConfiguration {
      */
     private EndpointConfiguration endpointConfiguration;
 
+    private Fields fields;
+
     @Deprecated
     private transient Filters filters;
 
     private ListSecrets listSecrets;
-
-    private String prefix;
 
     public PluginConfiguration() {
         load();
@@ -118,14 +118,14 @@ public class PluginConfiguration extends GlobalConfiguration {
         save();
     }
 
-    public String getPrefix() {
-        return prefix;
+    public Fields getFields() {
+        return fields;
     }
 
     @DataBoundSetter
     @SuppressWarnings("unused")
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
+    public void setFields(Fields fields) {
+        this.fields = fields;
         save();
     }
 
@@ -136,8 +136,8 @@ public class PluginConfiguration extends GlobalConfiguration {
         // https://groups.google.com/forum/#!msg/jenkinsci-dev/MuRJ-yPRRoo/AvoPZAgbAAAJ
         this.beta = null;
         this.endpointConfiguration = null;
+        this.fields = null;
         this.listSecrets = null;
-        this.prefix = null;
 
         req.bindJSON(this, json);
         save();

@@ -101,10 +101,10 @@ public class AwsSecretSource extends SecretSource {
     }
 
     private static Optional<String> getPrefix(PluginConfiguration config) {
-        if(config.getPrefix() != null) {
-            return Optional.of(config.getPrefix());
-        } else {
+//        if(config.getPrefix() != null) {
+//            return Optional.of(config.getPrefix());
+//        } else {
             return Optional.ofNullable(System.getenv(AWS_SECRETS_MANAGER_PREFIX));
-        }
+//        }
     }
 }
