@@ -1,6 +1,5 @@
 package io.jenkins.plugins.credentials.secretsmanager.config.fields.description;
 
-import io.jenkins.plugins.credentials.secretsmanager.config.Beta;
 import io.jenkins.plugins.credentials.secretsmanager.config.Fields;
 import io.jenkins.plugins.credentials.secretsmanager.config.PluginConfiguration;
 import org.junit.Test;
@@ -19,7 +18,7 @@ public abstract class AbstractDescriptionIT {
     public void shouldHaveDefault() {
         final PluginConfiguration config = getPluginConfiguration();
 
-        assertThat(Optional.ofNullable(config.getBeta()).map(Beta::getFields).map(Fields::getDescription)).isEmpty();
+        assertThat(Optional.ofNullable(config.getFields()).map(Fields::getDescription)).isEmpty();
     }
 
     @Test
@@ -31,7 +30,7 @@ public abstract class AbstractDescriptionIT {
         final PluginConfiguration config = getPluginConfiguration();
 
         // Then
-        assertThat(config.getBeta().getFields().getDescription()).isTrue();
+        assertThat(config.getFields().getDescription()).isTrue();
     }
 
     @Test
@@ -43,6 +42,6 @@ public abstract class AbstractDescriptionIT {
         final PluginConfiguration config = getPluginConfiguration();
 
         // Then
-        assertThat(config.getBeta().getFields().getDescription()).isFalse();
+        assertThat(config.getFields().getDescription()).isFalse();
     }
 }

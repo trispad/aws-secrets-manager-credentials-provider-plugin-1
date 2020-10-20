@@ -18,11 +18,6 @@ public class CasCIdIT extends AbstractIdIT {
     }
 
     @Override
-    protected void setId() {
-        // no-op (configured by annotations)
-    }
-
-    @Override
     protected void setId(String regex, String replacement) {
         // no-op (configured by annotations)
     }

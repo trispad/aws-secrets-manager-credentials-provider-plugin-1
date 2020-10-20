@@ -52,7 +52,7 @@ public class Fields extends AbstractDescribableImpl<Fields> implements Serializa
     @SuppressWarnings("unused")
     public static class DescriptorImpl extends Descriptor<Fields> {
 
-        public Transformer getDefaultTransformer() {
+        public Transformer getDefaultId() {
             return new Default();
         }
 

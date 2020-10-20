@@ -20,12 +20,9 @@ public class Beta extends AbstractDescribableImpl<Beta> implements Serializable 
 
     private Clients clients;
 
-    private Fields fields;
-
     @DataBoundConstructor
-    public Beta(Clients clients, Fields fields) {
+    public Beta(Clients clients) {
         this.clients = clients;
-        this.fields = fields;
     }
 
     public Clients getClients() {
@@ -35,15 +32,6 @@ public class Beta extends AbstractDescribableImpl<Beta> implements Serializable 
     @DataBoundSetter
     public void setClients(Clients clients) {
         this.clients = clients;
-    }
-
-    public Fields getFields() {
-        return fields;
-    }
-
-    @DataBoundSetter
-    public void setFields(Fields fields) {
-        this.fields = fields;
     }
 
     @Extension

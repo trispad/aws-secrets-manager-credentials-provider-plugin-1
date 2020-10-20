@@ -124,7 +124,7 @@ public class FieldsIT {
         }
 
         @Test
-        @ConfiguredWithCode(value = "/fields/description/false.yml")
+        @ConfiguredWithCode(value = "/no-description.yml")
         public void shouldHideDescription() {
             // Given
             final CreateSecretResult secret = createSecretWithDescription(DESCRIPTION);
