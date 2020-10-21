@@ -7,11 +7,9 @@ import com.amazonaws.services.secretsmanager.model.SecretListEntry;
 import com.amazonaws.services.secretsmanager.model.Tag;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import io.jenkins.plugins.credentials.secretsmanager.FiltersFactory;
-import io.jenkins.plugins.credentials.secretsmanager.config.Client;
-import io.jenkins.plugins.credentials.secretsmanager.config.Clients;
-import io.jenkins.plugins.credentials.secretsmanager.config.ListSecrets;
-import io.jenkins.plugins.credentials.secretsmanager.config.PluginConfiguration;
+import io.jenkins.plugins.credentials.secretsmanager.config.*;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.DefaultAWSCredentialsProviderChain;
+import io.jenkins.plugins.credentials.secretsmanager.config.transformer.Default;
 import io.jenkins.plugins.credentials.secretsmanager.factory.CredentialsFactory;
 
 import java.util.*;
@@ -50,15 +48,22 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
                 .flatMap(beta -> Optional.ofNullable(beta.getClients()))
                 .map(Clients::build);
 
-        final Function<String, String> nameFormatter = // FIXME implement Optional.ofNullable(config.getPrefix())
-               // .map(p -> (Function<String, String>) name -> name.replaceFirst(p, ""))
-                /*.orElse(*/Function.identity();//);
+        final Function<String, String> idFormatter = Optional.ofNullable(config.getFields()).map(Fields::getId).orElse(new Default())::transform;
+
+        final boolean showDescription = Optional.ofNullable(config.getFields()).map(Fields::getDescription).orElse(true);
+        final Function<String, String> descriptionFormatter = (str) -> {
+            if (showDescription) {
+                return str;
+            } else {
+                return "";
+            }
+        };
 
         final Stream<StandardCredentials> creds;
         if (clients.isPresent()) {
             // Custom behavior
             final Collection<Supplier<Collection<StandardCredentials>>> multipleSuppliers = clients.get().stream()
-                    .map(client -> new SingleAccountCredentialsSupplier(client, SecretListEntry::getARN, filters))
+                    .map(client -> new SingleAccountCredentialsSupplier(client, SecretListEntry::getARN, descriptionFormatter, filters))
                     .collect(Collectors.toList());
 
             final ParallelSupplier<Collection<StandardCredentials>> supplier = new ParallelSupplier<>(multipleSuppliers);
@@ -74,8 +79,8 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
             // Default behavior
             final Client clientConfig = new Client(new DefaultAWSCredentialsProviderChain(), config.getEndpointConfiguration(), null);
             final AWSSecretsManager secretsManager = clientConfig.build();
-            final Function<SecretListEntry, String> reformattedSecretName = secretListEntry -> nameFormatter.apply(secretListEntry.getName());
-            final SingleAccountCredentialsSupplier supplier = new SingleAccountCredentialsSupplier(secretsManager, reformattedSecretName, filters);
+            final Function<SecretListEntry, String> reformattedSecretName = secretListEntry -> idFormatter.apply(secretListEntry.getName());
+            final SingleAccountCredentialsSupplier supplier = new SingleAccountCredentialsSupplier(secretsManager, reformattedSecretName, descriptionFormatter, filters);
             creds = supplier.get().stream();
         }
 
@@ -88,11 +93,13 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
 
         private final AWSSecretsManager client;
         private final Function<SecretListEntry, String> nameSelector;
+        private final Function<String, String> descriptionFormatter;
         private final Collection<Filter> filters;
 
-        SingleAccountCredentialsSupplier(AWSSecretsManager client, Function<SecretListEntry, String> nameSelector, Collection<Filter> filters) {
+        SingleAccountCredentialsSupplier(AWSSecretsManager client, Function<SecretListEntry, String> nameSelector, Function<String, String> descriptionFormatter, Collection<Filter> filters) {
             this.client = client;
             this.nameSelector = nameSelector;
+            this.descriptionFormatter = descriptionFormatter;
             this.filters = filters;
         }
 
@@ -104,7 +111,8 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
                     .flatMap(secretListEntry -> {
                         final String arn = secretListEntry.getARN();
                         final String name = nameSelector.apply(secretListEntry);
-                        final String description = Optional.ofNullable(secretListEntry.getDescription()).orElse("");
+                        final String originalDescription = Optional.ofNullable(secretListEntry.getDescription()).orElse("");
+                        final String description = descriptionFormatter.apply(originalDescription);
                         final Map<String, String> tags = Lists.toMap(secretListEntry.getTags(), Tag::getKey, Tag::getValue);
                         final Optional<StandardCredentials> cred = CredentialsFactory.create(arn, name, description, tags, client);
                         return Optionals.stream(cred);

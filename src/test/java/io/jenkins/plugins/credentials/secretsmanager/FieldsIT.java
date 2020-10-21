@@ -14,8 +14,7 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.groups.Tuple.tuple;
 
 @RunWith(Enclosed.class)
@@ -61,11 +60,10 @@ public class FieldsIT {
             final CreateSecretResult stagingFoo = createSecretWithName("staging-foo", SECRET_STRING);
             final CreateSecretResult foo = createSecretWithName("foo", SECRET_STRING);
 
-            // When
-            final List<StringCredentials> credentials = jenkins.getCredentials().lookup(StringCredentials.class);
-
             // Then
-            fail("How should the name collision be handled?");
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> jenkins.getCredentials().lookup(StringCredentials.class))
+                    .withMessageContaining("Duplicate key");
         }
 
         @Test
