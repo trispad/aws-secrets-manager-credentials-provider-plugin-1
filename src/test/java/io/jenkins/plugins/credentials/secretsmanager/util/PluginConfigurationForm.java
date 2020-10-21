@@ -3,6 +3,7 @@ package io.jenkins.plugins.credentials.secretsmanager.util;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,13 @@ public class PluginConfigurationForm {
 
     public PluginConfigurationForm(HtmlForm form) {
         this.form = form;
+    }
+
+    public void setReplaceFirstTransformation(String regex, String replacement) {
+        final HtmlSelect select = form.getFirstByXPath("//td[contains(string(@class),'setting-name') and text()='ID']/following-sibling::td[contains(string(@class),'setting-main')]/select[contains(string(@class),'dropdownList')]");
+        select.getOptionByText("String#replaceFirst").setSelected(true);
+        form.getInputByName("_.regex").setValueAttribute(regex);
+        form.getInputByName("_.replacement").setValueAttribute(replacement);
     }
 
     public void setEndpointConfiguration(String serviceEndpoint, String signingRegion) {
