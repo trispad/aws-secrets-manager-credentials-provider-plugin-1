@@ -318,11 +318,10 @@ unclassified:
       serviceEndpoint: http://localhost:4584
       signingRegion: us-east-1
     fields:
-      id:
-        replaceFirst:
-          regex: "foo-"
-          replacement: ""
       description: false
+      name:
+        removePrefix:
+          prefix: "foo-"
     listSecrets:
       filters:
         - key: name

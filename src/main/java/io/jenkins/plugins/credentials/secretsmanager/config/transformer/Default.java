@@ -16,8 +16,13 @@ public class Default extends Transformer {
     }
 
     @Override
-    public String transform(String id) {
-        return id;
+    public String transform(String str) {
+        return str;
+    }
+
+    @Override
+    public String inverse(String str) {
+        return str;
     }
 
     @Override
@@ -40,7 +45,7 @@ public class Default extends Transformer {
         @Override
         @Nonnull
         public String getDisplayName() {
-            return Messages.defaultId();
+            return Messages.defaultName();
         }
     }
 }

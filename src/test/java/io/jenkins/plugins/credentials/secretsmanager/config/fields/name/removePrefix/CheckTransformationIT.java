@@ -1,4 +1,4 @@
-package io.jenkins.plugins.credentials.secretsmanager.config.fields.id.replaceFirst;
+package io.jenkins.plugins.credentials.secretsmanager.config.fields.name.removePrefix;
 
 import com.amazonaws.services.secretsmanager.model.CreateSecretRequest;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
@@ -22,7 +22,7 @@ public abstract class CheckTransformationIT {
             .around(jenkins)
             .around(secretsManager);
 
-    protected abstract FormValidationResult validate(String regex, String replacement);
+    protected abstract FormValidationResult validate(String prefix);
 
     @Before
     public void setEndpointConfiguration() {
@@ -32,13 +32,13 @@ public abstract class CheckTransformationIT {
     }
 
     @Test
-    public void shouldAllowGoodReplacement() {
+    public void shouldAllowGoodTransformation() {
         // Given
         createSecretWithName("staging-foo");
         createSecretWithName("production-foo");
 
         // When
-        final FormValidationResult result = validate("staging-", "");
+        final FormValidationResult result = validate("staging-");
 
         // Then
         assertSoftly(s -> {
@@ -48,13 +48,13 @@ public abstract class CheckTransformationIT {
     }
 
     @Test
-    public void shouldRejectBadReplacement() {
+    public void shouldRejectBadTransformation() {
         // Given
         createSecretWithName("staging-foo");
         createSecretWithName("foo");
 
         // When
-        final FormValidationResult result = validate("staging-", "");
+        final FormValidationResult result = validate("staging-");
 
         // Then
         assertSoftly(s -> {

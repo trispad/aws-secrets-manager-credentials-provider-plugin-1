@@ -1,4 +1,4 @@
-package io.jenkins.plugins.credentials.secretsmanager.config.fields.id.replaceFirst;
+package io.jenkins.plugins.credentials.secretsmanager.config.fields.name.removePrefix;
 
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import io.jenkins.plugins.credentials.secretsmanager.util.FormValidationResult;
@@ -11,13 +11,13 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CheckTransformationWebIT extends CheckTransformationIT {
 
     @Override
-    protected FormValidationResult validate(String regex, String replacement) {
+    protected FormValidationResult validate(String prefix) {
         final AtomicReference<FormValidationResult> result = new AtomicReference<>();
 
         jenkins.configure(f -> {
             final PluginConfigurationForm form = new PluginConfigurationForm(f);
 
-            form.setReplaceFirstTransformation(regex, replacement);
+            form.setRemovePrefixTransformation(prefix);
 
             final HtmlButton validateButton = form.getValidateButtons("Test Transformation").get(0);
             try {

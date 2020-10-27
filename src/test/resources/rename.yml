@@ -4,7 +4,6 @@ unclassified:
       serviceEndpoint: http://localhost:4584
       signingRegion: us-east-1
     fields:
-      id:
-        replaceFirst:
-          regex: "staging-"
-          replacement: ""
+      name:
+        removePrefix:
+          prefix: "staging-"

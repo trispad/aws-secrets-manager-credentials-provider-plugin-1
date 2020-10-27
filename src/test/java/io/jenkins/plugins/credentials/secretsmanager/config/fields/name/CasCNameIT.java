@@ -1,4 +1,4 @@
-package io.jenkins.plugins.credentials.secretsmanager.config.fields.id;
+package io.jenkins.plugins.credentials.secretsmanager.config.fields.name;
 
 import io.jenkins.plugins.casc.misc.ConfiguredWithCode;
 import io.jenkins.plugins.casc.misc.JenkinsConfiguredWithCodeRule;
@@ -7,7 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
-public class CasCIdIT extends AbstractIdIT {
+public class CasCNameIT extends AbstractNameIT {
 
     @Rule
     public final JenkinsRule r = new JenkinsConfiguredWithCodeRule();
@@ -18,21 +18,21 @@ public class CasCIdIT extends AbstractIdIT {
     }
 
     @Override
-    protected void setId(String regex, String replacement) {
+    protected void setName(String prefix) {
         // no-op (configured by annotations)
     }
 
     @Override
     @Test
-    @ConfiguredWithCode("/config/fields/id/default.yml")
+    @ConfiguredWithCode("/config/fields/name/default.yml")
     public void shouldSupportDefault() {
         super.shouldSupportDefault();
     }
 
     @Override
     @Test
-    @ConfiguredWithCode("/config/fields/id/replaceFirst.yml")
-    public void shouldSupportReplaceFirst() {
-        super.shouldSupportReplaceFirst();
+    @ConfiguredWithCode("/config/fields/name/removePrefix.yml")
+    public void shouldSupportRemovePrefix() {
+        super.shouldSupportRemovePrefix();
     }
 }

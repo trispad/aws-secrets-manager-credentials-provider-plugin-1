@@ -17,11 +17,10 @@ public class PluginConfigurationForm {
         this.form = form;
     }
 
-    public void setReplaceFirstTransformation(String regex, String replacement) {
-        final HtmlSelect select = form.getFirstByXPath("//td[contains(string(@class),'setting-name') and text()='ID']/following-sibling::td[contains(string(@class),'setting-main')]/select[contains(string(@class),'dropdownList')]");
-        select.getOptionByText("String#replaceFirst").setSelected(true);
-        form.getInputByName("_.regex").setValueAttribute(regex);
-        form.getInputByName("_.replacement").setValueAttribute(replacement);
+    public void setRemovePrefixTransformation(String prefix) {
+        final HtmlSelect select = getDropdownDescriptorSelectors("Name").get(0);
+        select.getOptionByText("Remove Prefix").setSelected(true);
+        form.getInputByName("_.prefix").setValueAttribute(prefix);
     }
 
     public void setEndpointConfiguration(String serviceEndpoint, String signingRegion) {
@@ -45,6 +44,10 @@ public class PluginConfigurationForm {
 
     public List<HtmlButton> getRepeatableAddButtons(String settingName) {
         return form.getByXPath(String.format("//td[contains(text(), '%s')]/following-sibling::td[@class='setting-main']//span[contains(string(@class),'repeatable-add')]//button[contains(text(), 'Add')]", settingName));
+    }
+
+    public List<HtmlSelect> getDropdownDescriptorSelectors(String settingName) {
+        return form.getByXPath(String.format("//td[contains(string(@class),'setting-name') and text()='%s']/following-sibling::td[contains(string(@class),'setting-main')]/select[contains(string(@class),'dropdownList')]", settingName));
     }
 
     public List<HtmlButton> getValidateButtons(String textContent) {

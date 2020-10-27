@@ -48,7 +48,7 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
                 .flatMap(beta -> Optional.ofNullable(beta.getClients()))
                 .map(Clients::build);
 
-        final Function<String, String> idFormatter = Optional.ofNullable(config.getFields()).map(Fields::getId).orElse(new Default())::transform;
+        final Function<String, String> nameFormatter = Optional.ofNullable(config.getFields()).map(Fields::getName).orElse(new Default())::transform;
 
         final boolean showDescription = Optional.ofNullable(config.getFields()).map(Fields::getDescription).orElse(true);
         final Function<String, String> descriptionFormatter = (str) -> {
@@ -79,7 +79,7 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
             // Default behavior
             final Client clientConfig = new Client(new DefaultAWSCredentialsProviderChain(), config.getEndpointConfiguration(), null);
             final AWSSecretsManager secretsManager = clientConfig.build();
-            final Function<SecretListEntry, String> reformattedSecretName = secretListEntry -> idFormatter.apply(secretListEntry.getName());
+            final Function<SecretListEntry, String> reformattedSecretName = secretListEntry -> nameFormatter.apply(secretListEntry.getName());
             final SingleAccountCredentialsSupplier supplier = new SingleAccountCredentialsSupplier(secretsManager, reformattedSecretName, descriptionFormatter, filters);
             creds = supplier.get().stream();
         }

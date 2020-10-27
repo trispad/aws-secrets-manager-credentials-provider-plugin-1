@@ -17,16 +17,16 @@ public class Fields extends AbstractDescribableImpl<Fields> implements Serializa
 
     private static final long serialVersionUID = 1L;
 
-    /** Whether to show the credential's description field or hide it. Defaults to true. */
+    /** Whether to show the secret's description or hide it. Defaults to true. */
     private Boolean description;
 
-    /** How to present the credential's ID field. Defaults to passthrough (no transformation). */
-    private Transformer id;
+    /** How to present the secret's name. Defaults to passthrough (no transformation). */
+    private Transformer name;
 
     @DataBoundConstructor
-    public Fields(Boolean description, Transformer id) {
+    public Fields(Boolean description, Transformer name) {
         this.description = description;
-        this.id = id;
+        this.name = name;
     }
 
     public Boolean getDescription() {
@@ -38,13 +38,13 @@ public class Fields extends AbstractDescribableImpl<Fields> implements Serializa
         this.description = description;
     }
 
-    public Transformer getId() {
-        return id;
+    public Transformer getName() {
+        return name;
     }
 
     @DataBoundSetter
-    public void setId(Transformer id) {
-        this.id = id;
+    public void setName(Transformer name) {
+        this.name = name;
     }
 
     @Extension
@@ -52,7 +52,7 @@ public class Fields extends AbstractDescribableImpl<Fields> implements Serializa
     @SuppressWarnings("unused")
     public static class DescriptorImpl extends Descriptor<Fields> {
 
-        public Transformer getDefaultId() {
+        public Transformer getDefaultName() {
             return new Default();
         }
 

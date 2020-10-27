@@ -23,41 +23,47 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ReplaceFirst extends Transformer {
+public class RemovePrefix extends Transformer {
 
-    private String regex;
-
-    private String replacement;
+    private String prefix;
 
     @DataBoundConstructor
-    public ReplaceFirst(String regex, String replacement) {
-        this.regex = regex;
-        this.replacement = replacement;
+    public RemovePrefix(String prefix) {
+        this.prefix = prefix;
     }
 
-    public String getRegex() {
-        return regex;
-    }
-
-    @DataBoundSetter
-    public void setRegex(String regex) {
-        this.regex = regex;
-    }
-
-    public String getReplacement() {
-        return replacement;
+    public String getPrefix() {
+        return prefix;
     }
 
     @DataBoundSetter
-    public void setReplacement(String replacement) {
-        this.replacement = replacement;
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     @Override
-    public String transform(String id) {
-        return id.replaceFirst(fixNullAndTrim(regex), fixNullAndTrim(replacement));
+    public String transform(String str) {
+        return theTransform(str, prefix);
+    }
+
+    @Override
+    public String inverse(String str) {
+        return fixNullAndTrim(prefix).concat(str);
+    }
+
+    private static String theTransform(String str, String prefix) {
+        final String canonicalPrefix = fixNullAndTrim(prefix);
+
+        if (str.startsWith(canonicalPrefix)) {
+            return Pattern.compile(canonicalPrefix, Pattern.LITERAL)
+                    .matcher(str)
+                    .replaceFirst("");
+        } else {
+            return str;
+        }
     }
 
     /**
@@ -71,29 +77,28 @@ public class ReplaceFirst extends Transformer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ReplaceFirst that = (ReplaceFirst) o;
-        return Objects.equals(regex, that.regex) &&
-                Objects.equals(replacement, that.replacement);
+        RemovePrefix that = (RemovePrefix) o;
+        return Objects.equals(prefix, that.prefix);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(regex, replacement);
+        return Objects.hash(prefix);
     }
 
     @Extension
-    @Symbol("replaceFirst")
+    @Symbol("removePrefix")
     @SuppressWarnings("unused")
     public static class DescriptorImpl extends Transformer.DescriptorImpl {
         @Override
         @Nonnull
         public String getDisplayName() {
-            return Messages.replaceFirst();
+            return Messages.removePrefix();
         }
 
-        public FormValidation doCheckRegex(@QueryParameter String regex) {
-            if (Util.fixEmptyAndTrim(regex) == null) {
-                return FormValidation.warning("Regex should not be empty");
+        public FormValidation doCheckPrefix(@QueryParameter String prefix) {
+            if (Util.fixEmptyAndTrim(prefix) == null) {
+                return FormValidation.warning("Prefix should not be empty");
             }
             return FormValidation.ok();
         }
@@ -101,8 +106,7 @@ public class ReplaceFirst extends Transformer {
         @POST
         @SuppressWarnings("unused")
         public FormValidation doTestTransformation(
-                @QueryParameter("regex") final String regex,
-                @QueryParameter("replacement") final String replacement) {
+                @QueryParameter("prefix") final String prefix) {
             Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
 
             final PluginConfiguration pluginConfiguration = PluginConfiguration.getInstance();
@@ -119,7 +123,7 @@ public class ReplaceFirst extends Transformer {
 
             final Map<String, Long> transformedIds = result.getSecretList().stream()
                     .map(SecretListEntry::getName)
-                    .map(name -> name.replaceFirst(regex, replacement))
+                    .map(name -> theTransform(name, prefix))
                     .collect(Collectors.groupingBy(c -> c, Collectors.counting()));
 
             final boolean transformedIdsAreNotUnique = transformedIds.values().stream()

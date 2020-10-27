@@ -1,49 +1,54 @@
 # Fields
 
-Specify how fields from the underlying Secrets Manager secret are transformed to the fields on the Jenkins credential.
+Specify how fields from the underlying Secrets Manager secret are presented in Jenkins.
 
-## ID
+## Name
 
-Choose how to present the credential ID.
+Choose how to present and resolve the secret name.
 
 ### Default
 
-The credential ID is presented without any transformation.
+`CredentialsProvider`: The name is presented without transformation.
 
-### String#replaceFirst
+`SecretSource`: The name is resolved without transformation.
 
-The credential ID is transformed using [`String#replaceFirst`](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#replaceFirst-java.lang.String-java.lang.String-).
+### Remove Prefix
 
-Arguments:
+:warning: **This feature can break the credentials provider.** If a transformation causes multiple credentials to end up with the same ID, an error occurs. Test your configuration before applying it, and after modifying secrets in Secrets Manager.
 
-- `regex` - the regular expression to match in the string
-- `replacement` - the substitute for the first match (leave blank to delete the matched text)
+`CredentialsProvider`: The specified prefix is *removed* from the secret name *if present*.
 
-:warning: **This feature can break the credentials provider.** If a transformation causes multiple credentials to end up with the same ID, an error occurs. **Test your configuration before applying it, and after modifying secrets in Secrets Manager.** 
+`SecretSource`: The specified prefix is *added* to the CasC secret name when resolving the secret.
 
-**Example:** Remove the prefix 'foo-' from any credentials that have this prefix.
+#### Example
 
 ```yaml
 unclassified:
   awsCredentialsProvider:
     fields:
-      id:
-        replaceFirst:
-          regex: "foo-"
-          replacement: ""
-``` 
+      name:
+        removePrefix:
+          prefix: "foo-"
+```
+
+Effects:
+
+- `CredentialsProvider`: the Secrets Manager secret "foo-artifactory" is presented as the credential "artifactory".
+- `SecretSource`: the CasC secret "artifactory" resolves to the Secrets Manager secret "foo-artifactory".
 
 ## Description
 
-Choose whether to show or hide the credential description.
+`CredentialsProvider`: Choose whether to show or hide the secret description.
+
+`SecretSource`: No effect.
 
 ### Show (default)
 
-The description is shown in the credential.
+The description is shown.
 
 ### Hide
 
-An empty string will be shown for the credential description.
+An empty string will be shown instead of the description.
 
 ```yaml
 unclassified:

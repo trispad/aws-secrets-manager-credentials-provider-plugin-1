@@ -1,4 +1,4 @@
-package io.jenkins.plugins.credentials.secretsmanager.config.fields.id.replaceFirst;
+package io.jenkins.plugins.credentials.secretsmanager.config.fields.name.removePrefix;
 
 import io.jenkins.plugins.credentials.secretsmanager.util.FormValidationResult;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -12,9 +12,9 @@ import java.util.regex.Pattern;
 public class CheckTransformationApiIT extends CheckTransformationIT {
 
     @Override
-    protected FormValidationResult validate(String regex, String replacement) {
+    protected FormValidationResult validate(String prefix) {
         final JenkinsRule.JSONWebResponse response = doPost(
-                String.format("descriptorByName/io.jenkins.plugins.credentials.secretsmanager.config.transformer.ReplaceFirst/testTransformation?regex=%s&replacement=%s", regex, replacement),
+                String.format("descriptorByName/io.jenkins.plugins.credentials.secretsmanager.config.transformer.RemovePrefix/testTransformation?prefix=%s", prefix),
                 "");
 
         final String responseBodyString = response.getContentAsString(StandardCharsets.UTF_8);

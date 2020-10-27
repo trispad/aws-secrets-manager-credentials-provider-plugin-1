@@ -12,10 +12,18 @@ public abstract class Transformer extends AbstractDescribableImpl<Transformer> i
     /**
      * Transform the string using some operation.
      *
-     * @param id the raw string
+     * @param str the raw string
      * @return the transformed string
      */
-    public abstract String transform(String id);
+    public abstract String transform(String str);
+
+    /**
+     * Apply the inverse transformation.
+     *
+     * @param str the string to transform back to what it would have been
+     * @return the inverse-transformed string
+     */
+    public abstract String inverse(String str);
 
     public abstract static class DescriptorImpl extends Descriptor<Transformer> {
         /**
