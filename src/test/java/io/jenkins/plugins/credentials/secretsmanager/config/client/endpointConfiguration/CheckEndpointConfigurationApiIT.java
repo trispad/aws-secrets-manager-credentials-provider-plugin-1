@@ -1,4 +1,4 @@
-package io.jenkins.plugins.credentials.secretsmanager.config.endpointConfiguration;
+package io.jenkins.plugins.credentials.secretsmanager.config.client.endpointConfiguration;
 
 import io.jenkins.plugins.credentials.secretsmanager.util.FormValidationResult;
 import io.jenkins.plugins.credentials.secretsmanager.util.Rules;

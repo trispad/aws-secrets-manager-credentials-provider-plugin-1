@@ -3,6 +3,7 @@ package io.jenkins.plugins.credentials.secretsmanager.util;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,10 @@ public class PluginConfigurationForm {
 
     public HtmlButton getValidateButton(String textContent) {
         return form.getFirstByXPath(XPaths.validateButtons(textContent));
+    }
+
+    public List<HtmlSelect> getDropdownDescriptorSelectors(String settingName) {
+        return form.getByXPath(String.format("//td[contains(string(@class),'setting-name') and text()='%s']/following-sibling::td[contains(string(@class),'setting-main')]/select[contains(string(@class),'dropdownList')]", settingName));
     }
 
     private static class XPaths {
